@@ -1,0 +1,23 @@
+Flask
+
+pytesseract
+
+Pillow (PIL)
+
+os
+
+uuid
+
+datetime
+
+MySQL
+
+HTML
+
+CSS
+
+JavaScript
+
+Canvas API
+
+Tesseract OCR Engine
