@@ -1,0 +1,352 @@
+[
+    {
+        "id": "pan_card",
+        "name": "PAN Card",
+        "keywords": [
+            "pan",
+            "pan card",
+            "permanent account number"
+        ],
+        "category": "Identity Document",
+        "state": "All India",
+        "documents": [
+            "Proof of Identity",
+            "Proof of Address",
+            "Proof of Date of Birth",
+            "Recent Photograph"
+        ],
+        "process": [
+            "Choose PAN application service",
+            "Fill the application form",
+            "Submit the required documents",
+            "Complete the applicable verification",
+            "Receive PAN"
+        ],
+        "official_url": "https://www.incometax.gov.in/"
+    },
+
+    {
+        "id": "income_certificate_punjab",
+        "name": "Income Certificate",
+        "keywords": [
+            "income certificate",
+            "income proof",
+            "income certificate punjab"
+        ],
+        "category": "Certificate",
+        "state": "Punjab",
+        "documents": [
+            "Identity Proof",
+            "Address Proof",
+            "Income Proof",
+            "Recent Photograph"
+        ],
+        "process": [
+            "Open the official Punjab service portal",
+            "Select Income Certificate",
+            "Fill the application",
+            "Upload required documents",
+            "Submit the application"
+        ],
+        "official_url": "https://punjab.gov.in/"
+    },
+
+    {
+        "id": "birth_certificate_punjab",
+        "name": "Birth Certificate",
+        "keywords": [
+            "birth certificate",
+            "birth cert",
+            "birth registration",
+            "birth record"
+        ],
+        "category": "Certificate",
+        "state": "Punjab",
+        "documents": [
+            "Birth or Hospital Record",
+            "Parent Identity Proof",
+            "Address Proof"
+        ],
+        "process": [
+            "Open the relevant official service",
+            "Enter birth details",
+            "Upload required documents",
+            "Submit the application"
+        ],
+        "official_url": "https://punjab.gov.in/"
+    },
+
+    {
+        "id": "driving_license_punjab",
+        "name": "Driving Licence",
+        "keywords": [
+            "driving licence",
+            "driving license",
+            "dl",
+            "driving permit"
+        ],
+        "category": "Transport",
+        "state": "Punjab",
+        "documents": [
+            "Proof of Identity",
+            "Proof of Address",
+            "Age Proof",
+            "Passport Size Photograph"
+        ],
+        "process": [
+            "Open the official transport service",
+            "Select the required licence service",
+            "Fill the application",
+            "Upload documents",
+            "Complete the required test or verification"
+        ],
+        "official_url": "https://parivahan.gov.in/"
+    },
+
+    {
+        "id": "income_certificate_haryana",
+        "name": "Income Certificate",
+        "keywords": [
+            "income certificate",
+            "income proof",
+            "income certificate haryana"
+        ],
+        "category": "Certificate",
+        "state": "Haryana",
+        "documents": [
+            "Identity Proof",
+            "Address Proof",
+            "Income Proof"
+        ],
+        "process": [
+            "Open the official Haryana service portal",
+            "Select Income Certificate",
+            "Fill the application",
+            "Upload documents",
+            "Submit the application"
+        ],
+        "official_url": "https://www.haryana.gov.in/"
+    },
+
+    {
+        "id": "aadhaar_services",
+        "name": "Aadhaar Services",
+        "keywords": [
+            "aadhaar",
+            "aadhar",
+            "aadhaar card",
+            "aadhar card",
+            "aadhaar update",
+            "aadhar update"
+        ],
+        "category": "Identity Document",
+        "state": "All India",
+        "documents": [
+            "Valid supporting document as applicable",
+            "Aadhaar details"
+        ],
+        "process": [
+            "Open the official UIDAI service",
+            "Select the required Aadhaar service",
+            "Provide the required details",
+            "Submit the required documents or complete the required authentication",
+            "Track the request status if applicable"
+        ],
+        "official_url": "https://www.uidai.gov.in/"
+    },
+
+    {
+        "id": "voter_id",
+        "name": "Voter ID",
+        "keywords": [
+            "voter id",
+            "voter card",
+            "epic",
+            "epic card",
+            "new voter registration",
+            "voter registration"
+        ],
+        "category": "Identity Document",
+        "state": "All India",
+        "documents": [
+            "Age proof",
+            "Address proof",
+            "Recent photograph"
+        ],
+        "process": [
+            "Open the official Election Commission voter service",
+            "Select the required voter service",
+            "Fill the application form",
+            "Submit the required information and documents",
+            "Track the application status"
+        ],
+        "official_url": "https://voters.eci.gov.in/"
+    },
+
+    {
+        "id": "passport",
+        "name": "Passport",
+        "keywords": [
+            "passport",
+            "passport apply",
+            "new passport",
+            "passport renewal",
+            "passport reissue",
+            "reissue passport"
+        ],
+        "category": "Identity Document",
+        "state": "All India",
+        "documents": [
+            "Documents as specified by Passport Seva for the applicant category",
+            "Proof of present address",
+            "Proof of date of birth where applicable"
+        ],
+        "process": [
+            "Register on the Passport Seva portal",
+            "Select Fresh Passport or Re-issue as applicable",
+            "Fill and submit the application",
+            "Pay the applicable fee and schedule an appointment",
+            "Visit the selected Passport Seva Kendra with required documents"
+        ],
+        "official_url": "https://www.passportindia.gov.in/"
+    },
+
+    {
+        "id": "vehicle_registration",
+        "name": "Vehicle Registration",
+        "keywords": [
+            "vehicle registration",
+            "car registration",
+            "bike registration",
+            "vehicle rc",
+            "rc",
+            "registration certificate",
+            "new vehicle registration"
+        ],
+        "category": "Transport",
+        "state": "All India",
+        "documents": [
+            "Vehicle-related documents",
+            "Identity proof",
+            "Address proof",
+            "Insurance and other documents as applicable"
+        ],
+        "process": [
+            "Open the official Parivahan service",
+            "Select the applicable vehicle registration service",
+            "Enter the required vehicle and applicant details",
+            "Submit the required documents",
+            "Complete the applicable verification and fee payment"
+        ],
+        "official_url": "https://parivahan.gov.in/"
+    },
+
+    {
+        "id": "learner_licence",
+        "name": "Learner Licence",
+        "keywords": [
+            "learner licence",
+            "learner license",
+            "learning licence",
+            "learning license",
+            "llr",
+            "learner permit"
+        ],
+        "category": "Transport",
+        "state": "All India",
+        "documents": [
+            "Proof of identity",
+            "Proof of address",
+            "Age proof",
+            "Photograph where applicable"
+        ],
+        "process": [
+            "Open the official Parivahan/Sarathi service",
+            "Select Learner Licence service",
+            "Fill the application",
+            "Upload or provide the required documents",
+            "Complete the applicable test or verification"
+        ],
+        "official_url": "https://parivahan.gov.in/"
+    },
+
+    {
+        "id": "police_clearance_certificate",
+        "name": "Police Clearance Certificate",
+        "keywords": [
+            "police clearance certificate",
+            "pcc",
+            "police clearance",
+            "pcc certificate"
+        ],
+        "category": "Certificate",
+        "state": "All India",
+        "documents": [
+            "Documents as specified for the applicant category",
+            "Proof of identity",
+            "Proof of address"
+        ],
+        "process": [
+            "Open the official Passport Seva portal",
+            "Select Police Clearance Certificate",
+            "Complete the application",
+            "Pay the applicable fee and schedule an appointment where required",
+            "Complete the required verification"
+        ],
+        "official_url": "https://www.passportindia.gov.in/"
+    },
+
+    {
+        "id": "domicile_certificate_punjab",
+        "name": "Domicile Certificate",
+        "keywords": [
+            "domicile certificate",
+            "residence certificate",
+            "resident certificate",
+            "domicile punjab",
+            "residence proof punjab"
+        ],
+        "category": "Certificate",
+        "state": "Punjab",
+        "documents": [
+            "Identity proof",
+            "Address/residence proof",
+            "Other documents as applicable"
+        ],
+        "process": [
+            "Open the relevant official Punjab service",
+            "Select the Domicile or Residence Certificate service",
+            "Fill the application",
+            "Upload the required documents",
+            "Submit the application"
+        ],
+        "official_url": "https://punjab.gov.in/"
+    },
+
+    {
+        "id": "caste_certificate_punjab",
+        "name": "Caste Certificate",
+        "keywords": [
+            "caste certificate",
+            "caste certificate punjab",
+            "sc certificate",
+            "st certificate",
+            "obc certificate"
+        ],
+        "category": "Certificate",
+        "state": "Punjab",
+        "documents": [
+            "Identity proof",
+            "Address/residence proof",
+            "Supporting caste-related documents as applicable"
+        ],
+        "process": [
+            "Open the relevant official Punjab service",
+            "Select the applicable caste certificate service",
+            "Fill the application",
+            "Upload the required documents",
+            "Submit the application"
+        ],
+        "official_url": "https://punjab.gov.in/"
+    }
+]

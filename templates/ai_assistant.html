@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | AI Assistant</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/ai_assistant.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+    <header>
+        <h2>🤖 CivicLoop AI Assistant</h2>
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </header>
+
+    <div id="messages" aria-live="polite">
+        <div class="message bot">
+            Hello! 👋 Ask me about government services.
+        </div>
+    </div>
+
+    <div id="voice-status" aria-live="polite"></div>
+
+    <form id="chat-form">
+        <button id="mic-btn" type="button" title="Speak your question">
+            🎤
+        </button>
+
+        <input id="message-input" type="text"
+               placeholder="Type or speak your message..."
+               maxlength="1000" required>
+
+        <button id="send-btn" type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("message-input");
+    const messages = document.getElementById("messages");
+    const sendBtn = document.getElementById("send-btn");
+    const micBtn = document.getElementById("mic-btn");
+    const voiceStatus = document.getElementById("voice-status");
+
+    function addMessage(text, type) {
+        const div = document.createElement("div");
+        div.className = "message " + type;
+        div.textContent = text;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+
+    // Voice input setup
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    let recognition = null;
+    let isListening = false;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = "en-IN";
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            isListening = true;
+            micBtn.classList.add("listening");
+            micBtn.textContent = "⏹️";
+            voiceStatus.textContent = "Listening... Speak now";
+        };
+
+        recognition.onresult = (event) => {
+            let transcript = "";
+
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+
+            input.value = transcript;
+        };
+
+        recognition.onerror = (event) => {
+            voiceStatus.textContent =
+                event.error === "not-allowed"
+                    ? "Microphone permission denied."
+                    : "Voice error: " + event.error;
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            micBtn.classList.remove("listening");
+            micBtn.textContent = "🎤";
+
+            if (voiceStatus.textContent === "Listening... Speak now") {
+                voiceStatus.textContent = input.value.trim()
+                    ? "Voice captured. Press Send."
+                    : "No speech detected. Try again.";
+            }
+        };
+
+        micBtn.addEventListener("click", () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                voiceStatus.textContent = "";
+                try {
+                    recognition.start();
+                } catch (error) {
+                    voiceStatus.textContent =
+                        "Please wait and try again.";
+                }
+            }
+        });
+    } else {
+        micBtn.disabled = true;
+        micBtn.title = "Voice input is not supported in this browser";
+        voiceStatus.textContent =
+            "Voice input is not supported in this browser.";
+    }
+
+    // Send message to Flask AI
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        if (isListening && recognition) {
+            recognition.stop();
+        }
+
+        addMessage(message, "user");
+        input.value = "";
+        input.disabled = true;
+        sendBtn.disabled = true;
+        micBtn.disabled = true;
+        voiceStatus.textContent = "";
+
+        const loading = addMessage("Thinking...", "bot");
+
+        try {
+            const response = await fetch("{{ url_for('ai.chat') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+
+            loading.textContent = response.ok
+                ? data.answer
+                : (data.error || "Something went wrong.");
+
+        } catch (error) {
+            loading.textContent =
+                "Could not connect. Please try again.";
+        } finally {
+            input.disabled = false;
+            sendBtn.disabled = false;
+            micBtn.disabled = !SpeechRecognition;
+            input.focus();
+        }
+    });
+</script>
+
+</body>
+</html>

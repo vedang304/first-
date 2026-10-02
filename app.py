@@ -1,4 +1,4 @@
-
+from ai_assistant import ai_bp
 import os
 import re
 import logging
@@ -36,6 +36,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Register Documents Blueprint
 app.register_blueprint(documents_bp)
+app.register_blueprint(ai_bp)
 
 
 # -------------------- HOME --------------------
