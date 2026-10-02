@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents | CivicLoop</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/documents.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <a href="{{ url_for('dashboard') }}" class="brand">CivicLoop</a>
+    <a href="{{ url_for('dashboard') }}" class="back-link">← Dashboard</a>
+</header>
+
+<main class="documents-container">
+
+    {% if mode == "home" %}
+        <section class="page-heading">
+            <span class="eyebrow">CIVICLOOP SERVICES</span>
+            <h1>Documents</h1>
+            <p>Scan, manage, read and organize your documents in one place.</p>
+        </section>
+
+        <section class="feature-grid">
+            <a href="{{ url_for('documents.scan_document') }}" class="feature-card">
+                <div class="feature-icon scan-icon">▣</div>
+                <h2>Scan Document</h2>
+                <p>Scan documents using your camera.</p>
+                <span class="card-action">Open feature →</span>
+            </a>
+
+            <a href="{{ url_for('documents.ocr_document') }}" class="feature-card">
+                <div class="feature-icon ocr-icon">Aa</div>
+                <h2>OCR</h2>
+                <p>Extract text from images and scanned documents.</p>
+                <span class="card-action">Open feature →</span>
+            </a>
+
+            <a href="{{ url_for('documents.pdf_reader') }}" class="feature-card">
+                <div class="feature-icon pdf-icon">PDF</div>
+                <h2>PDF Reader</h2>
+                <p>Open and read your PDF documents.</p>
+                <span class="card-action">Open feature →</span>
+            </a>
+
+            <a href="{{ url_for('documents.upload_document') }}" class="feature-card">
+                <div class="feature-icon upload-icon">↑</div>
+                <h2>Upload Document</h2>
+                <p>Upload PDF, JPG, JPEG or PNG files.</p>
+                <span class="card-action">Upload now →</span>
+            </a>
+
+            <a href="{{ url_for('documents.my_files') }}" class="feature-card">
+                <div class="feature-icon files-icon">▤</div>
+                <h2>My Files</h2>
+                <p>View, open and manage your saved documents.</p>
+                <span class="card-action">View files →</span>
+            </a>
+
+            <a href="{{ url_for('documents.my_files') }}" class="feature-card">
+                <div class="feature-icon search-icon">⌕</div>
+                <h2>Search Documents</h2>
+                <p>Find documents by their file names.</p>
+                <span class="card-action">Search files →</span>
+            </a>
+        </section>
+
+    {% elif mode == "upload" %}
+        <section class="page-heading">
+            <span class="eyebrow">DOCUMENTS</span>
+            <h1>Upload Document</h1>
+            <p>Select a file to save it to your documents.</p>
+        </section>
+
+        <section class="content-panel">
+            {% if error %}
+                <div class="alert error">{{ error }}</div>
+            {% endif %}
+
+            {% if success %}
+                <div class="alert success">{{ success }}</div>
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data"
+                  action="{{ url_for('documents.upload_document') }}">
+                <label for="document" class="upload-area">
+                    <span class="upload-symbol">↑</span>
+                    <strong>Choose a document</strong>
+                    <span>PDF, JPG, JPEG or PNG · Maximum 10 MB</span>
+                    <input type="file" name="document" id="document"
+                           accept=".pdf,.jpg,.jpeg,.png" required>
+                </label>
+
+                <button type="submit" class="primary-btn">Upload File</button>
+            </form>
+        </section>
+
+    {% elif mode == "files" %}
+        <section class="page-heading">
+            <span class="eyebrow">DOCUMENTS</span>
+            <h1>My Files</h1>
+            <p>All your uploaded documents in one place.</p>
+        </section>
+
+        <section class="content-panel">
+            <div class="files-toolbar">
+                <input type="search" id="fileSearch"
+                       placeholder="Search documents..." oninput="filterFiles()">
+
+                <a href="{{ url_for('documents.upload_document') }}"
+                   class="primary-btn">+ Upload</a>
+            </div>
+
+            {% if documents %}
+                <div class="file-list" id="fileList">
+                    {% for doc in documents %}
+                        <div class="file-row"
+                             data-name="{{ doc.original_name|lower }}">
+                            <div class="file-info">
+                                <div class="file-icon">▤</div>
+                                <div>
+                                    <strong>{{ doc.original_name }}</strong>
+                                    <small>{{ doc.uploaded_at }}</small>
+                                </div>
+                            </div>
+
+                            <div class="file-actions">
+                                <a class="view-btn"
+                                   href="{{ url_for('documents.view_document',
+                                                    document_id=doc.id) }}">
+                                    Open
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ url_for('documents.delete_document',
+                                                         document_id=doc.id) }}"
+                                      onsubmit="return confirm('Delete this document?');">
+                                    <button class="delete-btn" type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <p id="noMatches" class="empty-state" hidden>
+                    No matching documents found.
+                </p>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-symbol">▤</div>
+                    <h2>No documents yet</h2>
+                    <p>Upload your first document to see it here.</p>
+
+                    <a href="{{ url_for('documents.upload_document') }}"
+                       class="primary-btn">Upload Document</a>
+                </div>
+            {% endif %}
+        </section>
+
+ 
+    {% elif mode == "scan" %}
+        <section class="page-heading">
+            <span class="eyebrow">DOCUMENTS</span>
+            <h1>Document Scanner</h1>
+            <p>Capture a document using your camera and save it to My Files.</p>
+        </section>
+
+        <section class="content-panel scanner-panel">
+            <div class="camera-container">
+                <video id="camera" autoplay playsinline></video>
+                <canvas id="preview" hidden></canvas>
+            </div>
+
+            <div class="scanner-actions">
+                <button type="button" class="primary-btn" id="startCamera">
+                    Start Camera
+                </button>
+
+                <button type="button" class="view-btn" id="capture"
+                        disabled>
+                    Capture Document
+                </button>
+
+                <button type="button" class="primary-btn" id="saveScan"
+                        disabled>
+                    Save to My Files
+                </button>
+            </div>
+
+            <p id="scanStatus" role="status">
+                Allow camera access to start scanning.
+            </p>
+        </section>
+
+        <script>
+        const camera = document.getElementById("camera");
+        const preview = document.getElementById("preview");
+        const startBtn = document.getElementById("startCamera");
+        const captureBtn = document.getElementById("capture");
+        const saveBtn = document.getElementById("saveScan");
+        const statusText = document.getElementById("scanStatus");
+
+        let cameraStream = null;
+        let capturedBlob = null;
+
+        startBtn.addEventListener("click", async () => {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" },
+                    audio: false
+                });
+
+                camera.srcObject = cameraStream;
+                camera.hidden = false;
+                preview.hidden = true;
+                captureBtn.disabled = false;
+                saveBtn.disabled = true;
+                capturedBlob = null;
+                statusText.textContent = "Camera ready. Capture your document.";
+            } catch (error) {
+                statusText.textContent =
+                    "Camera access failed. Please allow camera permission.";
+            }
+        });
+
+        captureBtn.addEventListener("click", () => {
+            if (!camera.videoWidth || !camera.videoHeight) {
+                statusText.textContent = "Camera is not ready yet.";
+                return;
+            }
+
+            preview.width = camera.videoWidth;
+            preview.height = camera.videoHeight;
+
+            const context = preview.getContext("2d");
+            context.drawImage(camera, 0, 0);
+
+            preview.toBlob((blob) => {
+                if (!blob) {
+                    statusText.textContent = "Could not capture image.";
+                    return;
+                }
+
+                capturedBlob = blob;
+                preview.hidden = false;
+                camera.hidden = true;
+                saveBtn.disabled = false;
+                statusText.textContent =
+                    "Document captured. You can now save it.";
+            }, "image/jpeg", 0.9);
+        });
+
+        saveBtn.addEventListener("click", async () => {
+            if (!capturedBlob) return;
+
+            saveBtn.disabled = true;
+            statusText.textContent = "Saving document...";
+
+            const formData = new FormData();
+            formData.append(
+                "scanned_document",
+                capturedBlob,
+                "scanned_document.jpg"
+            );
+
+            try {
+                const response = await fetch(
+                    "{{ url_for('documents.save_scanned_document') }}",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Save failed");
+                }
+
+                statusText.textContent = "Saved successfully!";
+                window.location.href =
+                    "{{ url_for('documents.my_files') }}";
+            } catch (error) {
+                statusText.textContent =
+                    "Could not save. Please try again.";
+                saveBtn.disabled = false;
+            }
+        });
+
+        window.addEventListener("beforeunload", () => {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+        });
+        </script>
+
+    
+    {% elif mode == "ocr" %}
+        <section class="page-heading">
+            <span class="eyebrow">DOCUMENTS</span>
+            <h1>OCR Text Recognition</h1>
+            <p>Select an image from My Files to extract its text.</p>
+        </section>
+
+        <section class="content-panel">
+            {% if error %}
+                <div class="alert error">{{ error }}</div>
+            {% endif %}
+
+            {% if image_documents %}
+                <form method="POST"
+                      action="{{ url_for('documents.ocr_document') }}">
+                    <label for="document_id">Choose an image</label>
+
+                    <select name="document_id" id="document_id" required>
+                        <option value="">Select an image</option>
+                        {% for doc in image_documents %}
+                            <option value="{{ doc.id }}">
+                                {{ doc.original_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="primary-btn">
+                        Extract Text
+                    </button>
+                </form>
+            {% else %}
+                <div class="empty-state">
+                    <h2>No images found</h2>
+                    <p>Upload or scan an image before using OCR.</p>
+                    <a href="{{ url_for('documents.upload_document') }}"
+                       class="primary-btn">Upload Image</a>
+                </div>
+            {% endif %}
+
+            {% if extracted_text %}
+                <div class="ocr-result">
+                    <h2>Extracted Text</h2>
+                    <pre class="ocr-output">{{ extracted_text }}</pre>
+                    <button type="button" class="view-btn"
+                            onclick="copyOCRText()">
+                        Copy Text
+                    </button>
+                </div>
+            {% endif %}
+        </section>
+
+        <script>
+        function copyOCRText() {
+            const text = document.querySelector(".ocr-output").textContent;
+            navigator.clipboard.writeText(text)
+                .then(() => alert("Text copied!"))
+                .catch(() => alert("Could not copy text."));
+        }
+        </script>
+    {% elif mode == "reader" %}
+        <section class="page-heading">
+            <span class="eyebrow">DOCUMENTS</span>
+            <h1>PDF Reader</h1>
+            <p>Select a PDF from your saved documents to read it.</p>
+        </section>
+
+        <section class="content-panel">
+            {% if pdf_documents %}
+                <div class="file-list">
+                    {% for doc in pdf_documents %}
+                        <div class="file-row">
+                            <div class="file-info">
+                                <div class="file-icon">PDF</div>
+                                <div>
+                                    <strong>{{ doc.original_name }}</strong>
+                                    <small>{{ doc.uploaded_at }}</small>
+                                </div>
+                            </div>
+
+                            <div class="file-actions">
+                                <a class="view-btn"
+                                   href="{{ url_for('documents.read_pdf',
+                                                    document_id=doc.id) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Read PDF
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-symbol">PDF</div>
+                    <h2>No PDF files found</h2>
+                    <p>Upload a PDF document to start reading.</p>
+
+                    <a href="{{ url_for('documents.upload_document') }}"
+                       class="primary-btn">Upload PDF</a>
+                </div>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    <a href="{{ url_for('documents.documents_home') }}" class="bottom-back">
+        ← Back to Documents
+    </a>
+</main>
+
+<script>
+function filterFiles() {
+    const searchInput = document.getElementById("fileSearch");
+    const rows = document.querySelectorAll(".file-row");
+    const noMatches = document.getElementById("noMatches");
+
+    if (!searchInput) return;
+
+    const query = searchInput.value.toLowerCase();
+    let visible = 0;
+
+    rows.forEach(row => {
+        const name = row.dataset.name || "";
+        const match = name.includes(query);
+
+        row.style.display = match ? "flex" : "none";
+
+        if (match) {
+            visible++;
+        }
+    });
+
+    if (noMatches) {
+        noMatches.hidden = visible !== 0;
+    }
+}
+</script>
+
+</body>
+</html>

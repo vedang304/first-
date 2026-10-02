@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | CivicLoop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <a href="/" class="auth-brand">◉ CivicLoop</a>
+        <h1>Create Account</h1>
+        <p class="auth-subtitle">Join CivicLoop and access services in one place.</p>
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+
+        <form method="POST" action="{{ url_for('signup') }}">
+            <label>Full Name</label>
+            <input type="text" name="full_name" placeholder="Enter your name"
+                   value="{{ request.form.get('full_name', '') }}" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="Enter your email"
+                   value="{{ request.form.get('email', '') }}" required>
+
+            <label>Password</label>
+            <input type="password" name="password"
+                   placeholder="Minimum 8 characters" minlength="8" required>
+
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password"
+                   placeholder="Re-enter password" required>
+
+            <button type="submit" class="auth-button">Create Account</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+        </p>
+        <a href="/" class="guest-link">Continue as guest</a>
+    </div>
+</body>
+</html>

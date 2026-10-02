@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">CivicLoop.</div>
+
+        <div class="nav-title">Menu</div>
+        <a href="{{ url_for('dashboard') }}" class="nav-link active">⌂ &nbsp; Dashboard</a>
+        <a href="#services" class="nav-link">▦ &nbsp; All Services</a>
+        <a href="{{ url_for('documents.documents_home') }}" class="nav-link">▤ &nbsp; Documents</a>
+        <a href="#travel" class="nav-link">✈ &nbsp; Travel</a>
+        <a href="#healthcare" class="nav-link">✚ &nbsp; Healthcare</a>
+        <a href="#benefits" class="nav-link">♧ &nbsp; Benefits</a>
+        <a href="#ai-chat" class="nav-link">🤖 &nbsp; AI Chat</a>
+
+        <div class="sidebar-bottom">
+            <div class="nav-title">Account</div>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('logout') }}" class="nav-link">⇥ &nbsp; Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">⇥ &nbsp; Login</a>
+                <a href="{{ url_for('signup') }}" class="nav-link">＋ &nbsp; Sign Up</a>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <input class="search" type="search"
+                   placeholder="Search for services...">
+
+            <div class="user">
+                {% if session.get('user_name') %}
+                    Hello, {{ session.get('user_name') }} 👋
+                {% else %}
+                    Welcome, Guest 👋
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <h1>Your needs, one platform.</h1>
+            <p>
+                Welcome to CivicLoop! Discover public services,
+                access useful tools and find the information you need
+                — all in one place.
+            </p>
+        </section>
+
+        <!-- SERVICES -->
+        <section id="services">
+
+            <div class="section-heading">
+                <h2>Explore Services</h2>
+                <span>Everything you need, in one place</span>
+            </div>
+
+            <div class="cards">
+
+                <!-- DOCUMENTS -->
+                <a href="{{ url_for('documents.documents_home') }}"
+                   class="service-card" id="documents">
+                    <div class="service-icon">📁</div>
+                    <h3>Documents</h3>
+                    <p>
+                        Scan, upload, read and manage your documents.
+                    </p>
+                    <span class="arrow">Explore Documents →</span>
+                </a>
+
+                <!-- TRAVEL -->
+                <a href="#travel" class="service-card" id="travel">
+                    <div class="service-icon blue">✈️</div>
+                    <h3>Travel</h3>
+                    <p>
+                        Explore travel options, compare journeys
+                        and find useful travel information.
+                    </p>
+                    <span class="arrow">Explore Services →</span>
+                </a>
+
+                <!-- HEALTHCARE -->
+                <a href="#healthcare" class="service-card" id="healthcare">
+                    <div class="service-icon green">🏥</div>
+                    <h3>Healthcare</h3>
+                    <p>
+                        Find hospitals, discover healthcare services
+                        and get assistance with medical information.
+                    </p>
+                    <span class="arrow">Explore Services →</span>
+                </a>
+
+                <!-- BENEFITS & SCHEMES -->
+                <a href="#benefits" class="service-card" id="benefits">
+                    <div class="service-icon orange">🎓</div>
+                    <h3>Benefits & Schemes</h3>
+                    <p>
+                        Explore scholarships, government schemes,
+                        pensions and eligibility information.
+                    </p>
+                    <span class="arrow">Explore Services →</span>
+                </a>
+
+                <!-- AI CHAT ASSISTANT -->
+                <a href="/chat" class="service-card" id="ai-chat">
+                    <div class="service-icon purple">🤖</div>
+                    <h3>AI Chat Assistant</h3>
+                    <p>
+                        Ask questions, get instant answers and find
+                        guidance about public services using AI.
+                    </p>
+                    <span class="arrow">Chat with AI →</span>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            © 2026 CivicLoop. Connecting people with services.
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
