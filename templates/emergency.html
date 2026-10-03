@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Services | CivicLoop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/emergency.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 Emergency Services</h1>
+            <p>Quick access to emergency assistance</p>
+        </div>
+
+        <div class="emergency-alert">
+            <h2>Emergency Helpline: 112</h2>
+            <p>For immediate emergency assistance in India, call 112.</p>
+            <br>
+            <a href="tel:112" class="call-btn">📞 Call 112</a>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="icon">🚑</div>
+                <h3>Ambulance</h3>
+                <p>For urgent medical emergencies.</p>
+                <a href="tel:112" class="call-btn">Call for Help</a>
+            </div>
+
+            <div class="card">
+                <div class="icon">🚔</div>
+                <h3>Police</h3>
+                <p>For immediate police assistance.</p>
+                <a href="tel:112" class="call-btn">Call for Help</a>
+            </div>
+
+            <div class="card">
+                <div class="icon">🚒</div>
+                <h3>Fire Brigade</h3>
+                <p>For fires and related emergencies.</p>
+                <a href="tel:112" class="call-btn">Call for Help</a>
+            </div>
+        </div>
+
+        <a href="{{ url_for('health.health_home') }}" class="back">
+            ← Back to Health & Care
+        </a>
+    </div>
+</body>
+</html>

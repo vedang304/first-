@@ -1,0 +1,88 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | Health & Care</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/health_care.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">CivicLoop <span>Health & Care</span></div>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-text">
+                <p class="tag">CHANDIGARH HEALTH SERVICES</p>
+                <h1>Your Health,<br><span>Our Priority.</span></h1>
+                <p class="subtitle">
+                    Find hospitals, manage appointments and access
+                    emergency services in Chandigarh.
+                </p>
+            </div>
+            <div class="hero-icon">🏥</div>
+        </section>
+
+        <section class="services">
+            <h2>Healthcare Services</h2>
+            <p class="section-subtitle">How can we help you today?</p>
+
+            <div class="card-grid">
+
+                <a href="{{ url_for('health.find_hospitals') }}" class="service-card">
+                    <div class="card-icon green">📍</div>
+                    <h3>Find Nearby Hospital</h3>
+                    <p>Discover hospitals and clinics around Chandigarh.</p>
+                    <span class="card-link">Explore Hospitals →</span>
+                </a>
+
+                <a href="{{ url_for('health.appointment') }}" class="service-card">
+                    <div class="card-icon blue">📅</div>
+                   <h3>Appointment</h3>
+                   <p>Request an appointment with a hospital or doctor.</p>
+                   <span class="card-link">Book Appointment →</span>
+                </a>
+
+                <a href="{{ url_for('health.emergency') }}" class="service-card">
+                    <div class="card-icon red">🚑</div>
+                    <h3>Emergency Services</h3>
+                    <p>Access emergency contacts and nearby hospitals.</p>
+                    <span class="card-link">View Emergency Help →</span>
+                </a>
+                <a href="{{ url_for('health.add_hospital') }}" class="service-card">
+                    <div class="card-icon purple">➕</div>
+                    <h3>Add Hospital</h3>
+                    <p>Contribute by adding a hospital or clinic in Chandigarh.</p>
+                    <span class="card-link">Add Listing →</span>
+                </a>
+
+                <a href="{{ url_for('health.my_hospitals') }}" class="service-card">
+                    <div class="card-icon blue">🏥</div>
+                    <h3>My Hospitals</h3>
+                    <p>View and manage the hospitals you have submitted.</p>
+                    <span class="card-link">Manage Hospitals →</span>
+                </a>
+
+            </div>
+        </section>
+
+        <section class="notice">
+            <span>ℹ️</span>
+            <p>
+                Hospital listings submitted by users will be visible publicly
+                only after verification.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 CivicLoop | Chandigarh Citizen Services</p>
+    </footer>
+
+</body>
+</html>
+```

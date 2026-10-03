@@ -20,7 +20,7 @@
         <a href="#services" class="nav-link">▦ &nbsp; All Services</a>
         <a href="{{ url_for('documents.documents_home') }}" class="nav-link">▤ &nbsp; Documents</a>
         <a href="#travel" class="nav-link">✈ &nbsp; Travel</a>
-        <a href="#healthcare" class="nav-link">✚ &nbsp; Healthcare</a>
+        <a href="{{ url_for('health.my_appointments') }}" class="nav-link">📅 &nbsp; My Appointments</a>
         <a href="#benefits" class="nav-link">♧ &nbsp; Benefits</a>
         <a href="#ai-chat" class="nav-link">🤖 &nbsp; AI Chat</a>
 
@@ -96,7 +96,8 @@
                 </a>
 
                 <!-- HEALTHCARE -->
-                <a href="#healthcare" class="service-card" id="healthcare">
+                <a href="{{ url_for('health.health_home') }}"
+                    class="service-card" id="healthcare">
                     <div class="service-icon green">🏥</div>
                     <h3>Healthcare</h3>
                     <p>
@@ -106,6 +107,18 @@
                     <span class="arrow">Explore Services →</span>
                 </a>
 
+                
+<!-- MY APPOINTMENTS -->
+<a href="{{ url_for('health.my_appointments') }}"
+   class="service-card" id="my-appointments">
+    <div class="service-icon green">📅</div>
+    <h3>My Appointments</h3>
+    <p>
+        View your booked hospital appointments,
+        check appointment dates and track request status.
+    </p>
+    <span class="arrow">View Appointments →</span>
+</a>
                 <!-- BENEFITS & SCHEMES -->
                 <a href="#benefits" class="service-card" id="benefits">
                     <div class="service-icon orange">🎓</div>
@@ -118,7 +131,6 @@
                 </a>
 
                 <!-- AI CHAT ASSISTANT -->
-<!-- AI CHAT ASSISTANT -->
                 <a href="{{ url_for('ai.assistant') }}" class="service-card" id="ai-chat">
                     <div class="service-icon purple">🤖</div>
                     <h3>AI Chat Assistant</h3>

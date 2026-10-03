@@ -1,0 +1,83 @@
+.form-container {
+    max-width: 550px;
+    margin: 30px auto;
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.07);
+}
+
+.form-container label {
+    display: block;
+    margin: 16px 0 7px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.form-container input,
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+    background: #fff;
+}
+
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+    outline: 2px solid #86efac;
+    border-color: #16a34a;
+}
+
+.form-container button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #15803d;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background: #166534;
+}
+
+.form-container button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+.form-container a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #15803d;
+    text-decoration: none;
+}
+
+.flash {
+    text-align: center;
+    margin: 12px;
+}
+
+.flash.error {
+    color: #b91c1c;
+}
+
+.flash.success {
+    color: #15803d;
+}
+
+@media (max-width: 600px) {
+    .form-container {
+        margin: 15px;
+        padding: 20px;
+    }
+}

@@ -1,0 +1,157 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 35px 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.header {
+    text-align: center;
+    margin: 20px 0 35px;
+}
+
+.header h1 {
+    font-size: 34px;
+    color: #dc2626;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.emergency-alert {
+    background: #fff1f2;
+    border: 1px solid #fecaca;
+    border-left: 6px solid #dc2626;
+    padding: 25px;
+    border-radius: 14px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 18px rgba(220, 38, 38, 0.08);
+}
+
+.emergency-alert h2 {
+    color: #b91c1c;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.emergency-alert p {
+    color: #7f1d1d;
+    line-height: 1.6;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: #ffffff;
+    padding: 30px 22px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.13);
+}
+
+.icon {
+    font-size: 52px;
+    margin-bottom: 18px;
+}
+
+.card h3 {
+    color: #0f172a;
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.card p {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 48px;
+    margin-bottom: 22px;
+}
+
+.call-btn {
+    display: inline-block;
+    background: #dc2626;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.call-btn:hover {
+    background: #b91c1c;
+    transform: scale(1.03);
+}
+
+.emergency-alert .call-btn {
+    margin-top: 8px;
+}
+
+.back {
+    display: inline-block;
+    margin-top: 35px;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.back:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .emergency-alert h2 {
+        font-size: 21px;
+    }
+
+    .card {
+        padding: 25px 20px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 950px) {
+    .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

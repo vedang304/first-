@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | Add Hospital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/health_forms.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a href="{{ url_for('health.health_home') }}" class="logo">CivicLoop.</a>
+        <a href="{{ url_for('health.health_home') }}" class="back-link">← Health & Care</a>
+    </header>
+
+    <main class="page-container">
+        <section class="form-card">
+            <div class="form-heading">
+                <div class="heading-icon">🏥</div>
+                <p class="eyebrow">CHANDIGARH HEALTHCARE</p>
+                <h1>Add Hospital or Clinic</h1>
+                <p class="description">
+                    Help Chandigarh residents discover healthcare facilities.
+                    Your submission will be reviewed before it becomes public.
+                </p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('health.add_hospital') }}">
+                <div class="form-group">
+                    <label for="name">Hospital / Clinic Name <span>*</span></label>
+                    <input type="text" id="name" name="name"
+                           placeholder="Enter hospital name"
+                           maxlength="150" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sector">Sector, Chandigarh <span>*</span></label>
+                    <input type="text" id="sector" name="sector"
+                           placeholder="e.g. Sector 16"
+                           maxlength="50" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Full Address <span>*</span></label>
+                    <textarea id="address" name="address"
+                              placeholder="Enter complete address"
+                              maxlength="255" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Contact Number <span>*</span></label>
+                    <input type="tel" id="phone" name="phone"
+                           placeholder="Enter contact number"
+                           maxlength="15" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="speciality">Speciality</label>
+                    <input type="text" id="speciality" name="speciality"
+                           placeholder="e.g. General, Dental, Cardiology"
+                           maxlength="150">
+                </div>
+
+                <div class="form-note">
+                    <span>ℹ️</span>
+                    <p>Submitted listings remain pending until verified by an administrator.</p>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Hospital</button>
+                <a href="{{ url_for('health.health_home') }}" class="cancel-link">Cancel</a>
+            </form>
+        </section>
+    </main>
+
+    <footer>© 2026 CivicLoop | Chandigarh Citizen Services</footer>
+</body>
+</html>

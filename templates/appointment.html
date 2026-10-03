@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | Book Appointment</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/appointment.css') }}">
+</head>
+<body>
+
+    <h1>Book an Appointment</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="flash {{ category }}">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('health.appointment') }}">
+
+            <label for="hospital_id">Select Hospital *</label>
+            <select name="hospital_id" id="hospital_id" required>
+                <option value="">Choose a hospital</option>
+                {% for hospital in hospitals %}
+                    <option value="{{ hospital.id }}">
+                        {{ hospital.name }} - {{ hospital.sector }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            {% if not hospitals %}
+                <p>No approved hospitals available yet.</p>
+            {% endif %}
+
+            <label for="appointment_date">Appointment Date *</label>
+            <input type="date" name="appointment_date"
+                   id="appointment_date" min="{{ today }}" required>
+
+            <label for="appointment_time">Appointment Time *</label>
+            <input type="time" name="appointment_time"
+                   id="appointment_time" required>
+
+            <label for="reason">Reason for Appointment</label>
+            <textarea name="reason" id="reason"
+                      maxlength="500"
+                      placeholder="Briefly describe your reason..."
+                      rows="4"></textarea>
+
+            <button type="submit" {% if not hospitals %}disabled{% endif %}>
+                Submit Appointment Request
+            </button>
+        </form>
+
+        <a href="{{ url_for('health.health_home') }}">← Back to Health & Care</a>
+    </div>
+
+</body>
+</html>

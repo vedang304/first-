@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLoop | Find Hospitals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/health_forms.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a href="{{ url_for('health.health_home') }}" class="logo">CivicLoop.</a>
+        <a href="{{ url_for('health.health_home') }}" class="back-link">← Health & Care</a>
+    </header>
+
+    <main class="page-container wide">
+        <section class="search-header">
+            <p class="eyebrow">CHANDIGARH HEALTHCARE</p>
+            <h1>Find Hospitals & Clinics</h1>
+            <p class="description">
+                Search verified hospitals and clinics in Chandigarh.
+            </p>
+
+            <form method="GET" action="{{ url_for('health.find_hospitals') }}"
+                  class="search-form">
+                <input type="search" name="q" value="{{ search }}"
+                       placeholder="Search by hospital, sector or speciality..."
+                       aria-label="Search hospitals">
+                <button type="submit" class="submit-btn">Search</button>
+                {% if search %}
+                    <a href="{{ url_for('health.find_hospitals') }}"
+                       class="clear-link">Clear</a>
+                {% endif %}
+            </form>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="results-section">
+            <div class="results-heading">
+                <h2>Approved Facilities</h2>
+                <span>{{ hospitals|length }} found</span>
+            </div>
+
+            {% if hospitals %}
+                <div class="hospital-grid">
+                    {% for hospital in hospitals %}
+                        <article class="hospital-card">
+                            <div class="hospital-top">
+                                <div class="hospital-icon">🏥</div>
+                                <span class="verified">✓ Verified listing</span>
+                            </div>
+
+                            <h3>{{ hospital.name }}</h3>
+
+                            {% if hospital.speciality %}
+                                <p class="speciality">{{ hospital.speciality }}</p>
+                            {% endif %}
+
+                            <p class="detail">
+                                <span>📍</span>
+                                {{ hospital.address }}, {{ hospital.sector }}
+                            </p>
+
+                            <p class="detail">
+                                <span>📞</span>
+                                <a href="tel:{{ hospital.phone }}">{{ hospital.phone }}</a>
+                            </p>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🔎</div>
+                    <h3>No hospitals found</h3>
+                    {% if search %}
+                        <p>Try another hospital name, sector or speciality.</p>
+                    {% else %}
+                        <p>There are no approved hospital listings yet.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
+
+        <div class="contribute">
+            <div>
+                <h3>Know a hospital in Chandigarh?</h3>
+                <p>Help others by submitting a hospital or clinic listing.</p>
+            </div>
+            <a href="{{ url_for('health.add_hospital') }}" class="outline-btn">
+                + Add Hospital
+            </a>
+        </div>
+    </main>
+
+    <footer>© 2026 CivicLoop | Chandigarh Citizen Services</footer>
+</body>
+</html>

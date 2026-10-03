@@ -3,16 +3,11 @@ import os
 import re
 import logging
 
-from flask import (
-    Flask, render_template, request,
-    redirect, url_for, session, flash
-)
-from werkzeug.security import (
-    generate_password_hash, check_password_hash
-)
+from flask import (Flask, render_template, request,redirect, url_for, session, flash)
+from werkzeug.security import ( generate_password_hash, check_password_hash)
 from mysql.connector import IntegrityError
 from dotenv import load_dotenv
-
+from health_care import health_bp
 from db import get_connection
 from documents import documents_bp
 
@@ -34,16 +29,17 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
 logging.basicConfig(level=logging.INFO)
 
-# Register Documents Blueprint
+# Register Blueprints
 app.register_blueprint(documents_bp)
 app.register_blueprint(ai_bp)
+app.register_blueprint(health_bp)
 
 
 # -------------------- HOME --------------------
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html")    
 
 
 # -------------------- SIGNUP --------------------
