@@ -1,0 +1,206 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="benefits-page">
+    <div class="benefits-header">
+        <div>
+            <p class="eyebrow">CIVICLOOP SERVICES</p>
+            <h1>Benefits & Schemes</h1>
+            <p>Explore support programs and find information
+               relevant to you.</p>
+        </div>
+        <div class="benefits-icon">🎁</div>
+    </div>
+
+    <div class="benefits-search">
+        <input type="search" id="schemeSearch"
+               placeholder="Search schemes...">
+    </div>
+
+    <div class="scheme-categories">
+        <button class="category-btn active"
+                data-category="All">All</button>
+        <button class="category-btn"
+                data-category="Education">🎓 Education</button>
+        <button class="category-btn"
+                data-category="Women">👩 Women</button>
+        <button class="category-btn"
+                data-category="Pension">👴 Pension</button>
+        <button class="category-btn"
+                data-category="Housing">🏠 Housing</button>
+        <button class="category-btn"
+                data-category="Employment">💼 Employment</button>
+        <button class="category-btn"
+                data-category="Healthcare">🏥 Healthcare</button>
+    </div>
+
+    <h2>Explore Programs</h2>
+
+    <div class="scheme-grid" id="schemeGrid">
+        {% for scheme in schemes %}
+        <div class="scheme-card"
+             data-category="{{ scheme.category }}"
+             data-title="{{ scheme.title | lower }}">
+            <div class="scheme-card-top">
+                <span class="scheme-icon">{{ scheme.icon }}</span>
+                <span class="demo-tag">Demo</span>
+            </div>
+
+            <p class="scheme-category">{{ scheme.category }}</p>
+            <h3>{{ scheme.title }}</h3>
+            <p class="scheme-description">
+                {{ scheme.description }}
+            </p>
+
+            <button class="details-btn"
+                    onclick="showDetails(this)"
+                    data-title="{{ scheme.title }}"
+                    data-description="{{ scheme.description }}"
+                    data-eligibility="{{ scheme.eligibility }}">
+                View Details →
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p id="noResults" style="display:none;">
+        No matching schemes found.
+    </p>
+</div>
+
+<div id="schemeModal" class="scheme-modal">
+    <div class="scheme-modal-content">
+        <button class="modal-close"
+                onclick="closeDetails()">✕</button>
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+        <h3>Eligibility</h3>
+        <p id="modalEligibility"></p>
+        <p class="demo-note">
+            Demo information only. Official scheme details
+            will be added later.
+        </p>
+    </div>
+</div>
+
+<style>
+.benefits-page { padding: 24px; color: var(--text-color, inherit); }
+.benefits-header {
+    display:flex; justify-content:space-between; align-items:center;
+    gap:20px; padding:28px; border-radius:18px;
+    background:var(--card-bg, #f1f5f9);
+    margin-bottom:24px;
+}
+.eyebrow { color:#64748b; font-size:12px; letter-spacing:2px; }
+.benefits-header h1 { margin:8px 0; font-size:30px; }
+.benefits-header p { color:#64748b; }
+.benefits-icon { font-size:52px; }
+.benefits-search { margin-bottom:18px; }
+.benefits-search input {
+    width:100%; padding:14px 16px; border:1px solid #cbd5e1;
+    border-radius:12px; font-size:15px; box-sizing:border-box;
+}
+.scheme-categories {
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:26px;
+}
+.category-btn {
+    border:1px solid #cbd5e1; border-radius:20px;
+    padding:9px 16px; background:transparent; cursor:pointer;
+}
+.category-btn.active { background:#2563eb; color:white; border-color:#2563eb; }
+.scheme-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px; margin-top:16px;
+}
+.scheme-card {
+    padding:20px; border:1px solid #e2e8f0;
+    border-radius:16px; background:var(--card-bg, white);
+    display:flex; flex-direction:column; min-height:230px;
+}
+.scheme-card-top { display:flex; justify-content:space-between; align-items:center; }
+.scheme-icon { font-size:30px; }
+.demo-tag { font-size:11px; color:#64748b; background:#f1f5f9; padding:5px 9px; border-radius:10px; }
+.scheme-category { font-size:12px; color:#64748b; margin-bottom:0; }
+.scheme-card h3 { margin:8px 0; }
+.scheme-description { color:#64748b; line-height:1.5; flex:1; }
+.details-btn {
+    background:transparent; color:#2563eb; border:0;
+    padding:10px 0; text-align:left; font-weight:600; cursor:pointer;
+}
+.scheme-modal {
+    display:none; position:fixed; inset:0; background:#0008;
+    z-index:1000; align-items:center; justify-content:center; padding:20px;
+}
+.scheme-modal-content {
+    background:var(--card-bg, white); color:var(--text-color, #111827);
+    padding:26px; border-radius:16px; width:100%; max-width:450px;
+    position:relative;
+}
+.modal-close { position:absolute; top:14px; right:16px; border:0; background:transparent; cursor:pointer; font-size:18px; }
+.demo-note { color:#64748b; font-size:12px; margin-top:20px; }
+@media(max-width:600px) {
+    .benefits-page { padding:14px; }
+    .benefits-header { padding:20px; }
+    .benefits-header h1 { font-size:24px; }
+}
+</style>
+
+<script>
+let selectedCategory = "All";
+
+const searchInput = document.getElementById("schemeSearch");
+const cards = document.querySelectorAll(".scheme-card");
+const categoryButtons = document.querySelectorAll(".category-btn");
+
+function filterSchemes() {
+    const query = searchInput.value.toLowerCase().trim();
+    let visible = 0;
+
+    cards.forEach(card => {
+        const matchesCategory =
+            selectedCategory === "All" ||
+            card.dataset.category === selectedCategory;
+        const matchesSearch =
+            card.dataset.title.includes(query) ||
+            card.textContent.toLowerCase().includes(query);
+
+        const show = matchesCategory && matchesSearch;
+        card.style.display = show ? "flex" : "none";
+        if (show) visible++;
+    });
+
+    document.getElementById("noResults").style.display =
+        visible ? "none" : "block";
+}
+
+categoryButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        categoryButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        selectedCategory = button.dataset.category;
+        filterSchemes();
+    });
+});
+
+searchInput.addEventListener("input", filterSchemes);
+
+function showDetails(button) {
+    document.getElementById("modalTitle").textContent =
+        button.dataset.title;
+    document.getElementById("modalDescription").textContent =
+        button.dataset.description;
+    document.getElementById("modalEligibility").textContent =
+        button.dataset.eligibility;
+    document.getElementById("schemeModal").style.display = "flex";
+}
+
+function closeDetails() {
+    document.getElementById("schemeModal").style.display = "none";
+}
+
+document.getElementById("schemeModal").addEventListener("click", e => {
+    if (e.target.id === "schemeModal") closeDetails();
+});
+</script>
+{% endblock %}

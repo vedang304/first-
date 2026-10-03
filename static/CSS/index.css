@@ -295,3 +295,124 @@ body {
         width: 100%;
     }
 }
+
+
+/* ===== GLOBAL SEARCH ===== */
+
+.topbar {
+    position: relative;
+}
+
+.search-wrapper {
+    position: relative;
+    width: min(420px, 60%);
+    flex: 0 1 420px;
+    min-width: 0;
+}
+
+.search-wrapper .search {
+    width: 100%;
+    display: block;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    max-height: 360px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+}
+
+.search-results.show {
+    display: block;
+}
+
+.search-result {
+    display: block;
+    padding: 13px 16px;
+    color: #202938;
+    text-decoration: none;
+    border-bottom: 1px solid #edf0f4;
+    transition: background 0.2s ease;
+}
+
+.search-result:last-child {
+    border-bottom: none;
+}
+
+.search-result:hover {
+    background: #f2f6ff;
+}
+
+.search-result-type {
+    display: block;
+    margin-bottom: 4px;
+    color: #5276bd;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.search-result-title {
+    display: block;
+    font-size: 14px;
+}
+
+.search-result-description {
+    margin: 5px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.search-message {
+    padding: 16px;
+    color: #667085;
+    font-size: 13px;
+}
+
+/* ===== MOBILE SEARCH ===== */
+@media (max-width: 560px) {
+    .search-wrapper {
+        width: 100%;
+        flex: 1 1 100%;
+    }
+
+    .search-results {
+        max-height: 280px;
+    }
+}
+
+/* Dashboard cards alignment */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+.cards .service-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 185px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.cards .service-card p {
+    flex-grow: 1;
+}
+
+@media (max-width: 800px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+}

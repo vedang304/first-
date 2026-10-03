@@ -39,6 +39,13 @@
                 <span class="card-action">Open feature →</span>
             </a>
 
+            <a href="{{ url_for('ocr.ocr_home') }}" class="feature-card">
+                <div class="feature-icon ocr-icon">AI</div>
+                <h2>AI Document Validator</h2>
+                <p>Upload documents, extract text with OCR, and compare them with service requirements.</p>
+                <span class="card-action">Validate documents →</span>
+            </a>
+
             <a href="{{ url_for('documents.pdf_reader') }}" class="feature-card">
                 <div class="feature-icon pdf-icon">PDF</div>
                 <h2>PDF Reader</h2>
@@ -358,6 +365,7 @@
                 .catch(() => alert("Could not copy text."));
         }
         </script>
+        
     {% elif mode == "reader" %}
         <section class="page-heading">
             <span class="eyebrow">DOCUMENTS</span>

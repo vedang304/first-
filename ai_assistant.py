@@ -1,188 +1,179 @@
-
 import json
+import logging
 import os
 import re
-import logging
-from flask import current_app
-from flask import (Blueprint,render_template,request,jsonify,session,current_app)
+
+from flask import (
+    Blueprint, current_app, jsonify, render_template,
+    request, session,
+)
 from groq import Groq
 
 # ---------------- BASE CONFIG ----------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SERVICE_FILE = os.path.join(BASE_DIR, "service.json")
+
+SERVICE_FILE = os.path.join(BASE_DIR, "service_chandigarh.json")
+if not os.path.isfile(SERVICE_FILE):
+    SERVICE_FILE = os.path.join(BASE_DIR, "service.json")
 
 ai_bp = Blueprint("ai", __name__, url_prefix="/ai")
-
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ---------------- LOAD SERVICES ----------------
 
-try:
-    with open(SERVICE_FILE, "r", encoding="utf-8") as file:
-        services = json.load(file)
+def load_services():
+    try:
+        with open(SERVICE_FILE, "r", encoding="utf-8") as file:
+            data = json.load(file)
 
-    if not isinstance(services, list):
-        raise ValueError("service.json must contain a JSON list")
+        if not isinstance(data, list):
+            raise ValueError("Service JSON must contain a list.")
 
-except (OSError, json.JSONDecodeError, ValueError):
-    logger.exception("Could not load service.json")
-    services = []
+        valid_services = [
+            item for item in data
+            if isinstance(item, dict) and item.get("name")
+        ]
+        logger.info("Loaded %d services", len(valid_services))
+        return valid_services
+
+    except (OSError, json.JSONDecodeError, ValueError):
+        logger.exception("Could not load service data")
+        return []
 
 
-# ---------------- STATES ----------------
+services = load_services()
+
+# ---------------- AI PROMPT ----------------
+
+SYSTEM_PROMPT = """
+You are CivicLoop, a helpful assistant for Chandigarh residents.
+Reply in the same language as the user, using simple and concise language.
+You can answer general questions, but do not pretend to be a government authority.
+
+Do not invent official requirements, fees, deadlines, eligibility rules,
+processing times, or website links. If information is uncertain, say so and
+direct the user to verify it on the relevant official portal.
+
+When answering from the local service dataset, treat it as general guidance
+and remind the user to verify the latest details on the linked official portal.
+Do not claim that an application has been submitted, approved, or booked.
+"""
+
+# ---------------- STATE DETECTION ----------------
 
 STATES = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
-    "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Chandigarh", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
     "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala",
     "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
     "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
     "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
     "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi",
-    "Jammu and Kashmir", "Ladakh"
+    "Jammu and Kashmir", "Ladakh",
 ]
 
 
-# ---------------- AI PROMPT ----------------
-
-SYSTEM_PROMPT = """
-You are a helpful Indian government services assistant.
-Reply in the same language as the user, using simple language
-and concise answers.
-
-Do not invent official requirements, fees, deadlines,
-or website links. If unsure, say so and direct the user
-to verify details on the relevant official portal.
-
-For government services, clearly distinguish general
-guidance from verified official information.
-"""
-
-
-# ---------------- DETECT STATE ----------------
-
 def detect_state(message):
-    message = message.lower()
+    message_lower = message.lower()
 
-    for state in STATES:
-        pattern = r"\b" + re.escape(state.lower()) + r"\b"
-
-        if re.search(pattern, message):
+    for state in sorted(STATES, key=len, reverse=True):
+        pattern = r"(?<!\w)" + re.escape(state.lower()) + r"(?!\w)"
+        if re.search(pattern, message_lower):
             return state
 
     return None
 
 
-# ---------------- DETECT SERVICE ----------------
+# ---------------- SERVICE DETECTION ----------------
 
 def detect_service(message):
-    message = message.lower()
+    message_lower = message.lower()
+    matches = []
 
     for service in services:
-        if not isinstance(service, dict):
-            continue
-
-        name = str(service.get("name", ""))
+        name = str(service.get("name", "")).strip()
         keywords = service.get("keywords", [])
 
         if not isinstance(keywords, list):
             keywords = []
 
-        terms = [name] + keywords
+        terms = [name] + [str(keyword).strip() for keyword in keywords]
 
         for term in terms:
-            term = str(term).strip().lower()
-
             if not term:
                 continue
 
-            pattern = r"\b" + re.escape(term) + r"\b"
+            pattern = r"(?<!\w)" + re.escape(term.lower()) + r"(?!\w)"
+            if re.search(pattern, message_lower):
+                matches.append((len(term), service))
+                break
 
-            if re.search(pattern, message):
-                return service
+    if not matches:
+        return None
 
-    return None
+    matches.sort(key=lambda item: item[0], reverse=True)
+    return matches[0][1]
 
 
 # ---------------- SERVICE ANSWER ----------------
 
-def service_answer(service, state):
+def service_answer(service, state=None):
     name = str(service.get("name", "Government service"))
-    service_state = str(service.get("state") or "Not specified")
+    service_state = str(service.get("state") or "Not specified").strip()
 
-    if state:
-        matches = [
-            item for item in services
-            if isinstance(item, dict)
-            and str(item.get("name", "")).lower() == name.lower()
-            and str(item.get("state") or "").lower() == state.lower()
-        ]
+    central_ids = {
+        "pan_card_chandigarh",
+        "aadhaar_services_chandigarh",
+        "voter_id_chandigarh",
+        "passport_chandigarh",
+    }
+    service_id = str(service.get("id", ""))
 
-        if matches:
-            service = matches[0]
-            service_state = str(service.get("state") or state)
-
-        elif service_state.lower() != "all india":
-            return (
-                f"I couldn't find {name} for {state} in the current "
-                "service dataset. Please verify it on the official portal."
-            )
-
-    elif service_state.lower() == "all india":
-        matches = [
-            item for item in services
-            if isinstance(item, dict)
-            and str(item.get("name", "")).lower() == name.lower()
-        ]
-
-        if len(matches) > 1:
-            return (
-                f"{name} may vary by state. "
-                "Which state are you applying in?"
-            )
+    if state and state.lower() != "chandigarh" and service_id not in central_ids:
+        return (
+            f"The current CivicLoop service dataset has Chandigarh information "
+            f"for {name}, not {state}. Please check the relevant state's official "
+            "portal for its current requirements."
+        )
 
     lines = [
         f"Service: {name}",
-        f"State: {service_state}",
+        f"Area: {service_state}",
         "",
-        "Required documents:"
+        "Required documents (check the current official checklist):",
     ]
 
-    docs = service.get("documents", [])
-
-    if isinstance(docs, list) and docs:
-        lines.extend(f"- {doc}" for doc in docs)
+    documents = service.get("documents", [])
+    if isinstance(documents, list) and documents:
+        lines.extend(f"- {str(document)}" for document in documents)
     else:
-        lines.append(
-            "- Check the official portal for applicable documents."
-        )
+        lines.append("- Please check the official portal for applicable documents.")
 
     process = service.get("process", [])
-
     if isinstance(process, list) and process:
         lines.extend(["", "General process:"])
-        lines.extend(f"- {step}" for step in process)
+        lines.extend(f"- {str(step)}" for step in process)
 
     fee = service.get("fee")
-
-    if fee is not None:
+    if fee:
         lines.extend(["", f"Fee: {fee}"])
 
     processing_time = service.get("processing_time")
-
     if processing_time:
         lines.extend(["", f"Processing time: {processing_time}"])
 
     official_url = service.get("official_url")
-
     if official_url:
-        lines.extend(["", f"Portal: {official_url}"])
+        lines.extend(["", f"Official portal: {official_url}"])
+
+    notes = service.get("notes")
+    if notes:
+        lines.extend(["", f"Note: {notes}"])
 
     lines.extend([
         "",
-        "Please verify current requirements on the official portal."
+        "Please verify the latest eligibility, documents, fees, and steps on the official portal.",
     ])
 
     return "\n".join(lines)
@@ -190,18 +181,10 @@ def service_answer(service, state):
 
 # ---------------- ASSISTANT PAGE ----------------
 
-@ai_bp.route("/")
+@ai_bp.route("/", methods=["GET"])
 def assistant():
     if "user_id" not in session:
         return jsonify({"error": "Please log in first."}), 401
-
-    source, filename, _ = current_app.jinja_env.loader.get_source(
-        current_app.jinja_env,
-        "ai_assistant.html"
-    )
-
-    print("HTML FILE:", filename)
-    print("MIC BUTTON EXISTS:", "mic-btn" in source)
 
     return render_template("ai_assistant.html")
 
@@ -211,56 +194,42 @@ def assistant():
 @ai_bp.route("/chat", methods=["POST"])
 def chat():
     if "user_id" not in session:
-        return jsonify({
-            "error": "Please log in first."
-        }), 401
+        return jsonify({"error": "Please log in first."}), 401
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please send a valid JSON request."}), 400
+
     message = data.get("message", "")
-
     if not isinstance(message, str):
-        return jsonify({
-            "error": "Invalid message."
-        }), 400
+        return jsonify({"error": "Invalid message."}), 400
 
     message = message.strip()
-
     if not message:
-        return jsonify({
-            "error": "Please enter a message."
-        }), 400
+        return jsonify({"error": "Please enter a message."}), 400
 
     if len(message) > 1000:
-        return jsonify({
-            "error": "Message is too long (max 1000 characters)."
-        }), 400
+        return jsonify({"error": "Message is too long (max 1000 characters)."}), 400
 
     try:
-        # First check local government service dataset.
+        # Search local government service dataset first.
         service = detect_service(message)
-
         if service:
-            answer = service_answer(
-                service,
-                detect_state(message)
-            )
-
+            answer = service_answer(service, detect_state(message))
             return jsonify({"answer": answer})
 
-        # Otherwise use Groq AI.
+        # General questions use Groq.
         api_key = os.getenv("GROQ_API_KEY")
-
         if not api_key:
+            logger.error("GROQ_API_KEY is not configured.")
             return jsonify({
                 "error": "AI is not configured. Please check server settings."
             }), 503
 
         history = session.get("ai_history", [])
-
         if not isinstance(history, list):
             history = []
 
-        # Keep only recent valid messages.
         history = [
             item for item in history[-12:]
             if isinstance(item, dict)
@@ -269,15 +238,14 @@ def chat():
         ]
 
         client = Groq(api_key=api_key)
-
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 *history,
-                {"role": "user", "content": message}
+                {"role": "user", "content": message},
             ],
-            max_tokens=300
+            max_tokens=300,
         )
 
         answer = (
@@ -285,19 +253,29 @@ def chat():
             or "Sorry, I couldn't generate a response."
         )
 
-        # Store recent chat history in session.
         history.extend([
             {"role": "user", "content": message},
-            {"role": "assistant", "content": answer}
+            {"role": "assistant", "content": answer},
         ])
-
         session["ai_history"] = history[-12:]
+        session.modified = True
 
         return jsonify({"answer": answer})
 
     except Exception:
         logger.exception("AI assistant request failed")
-
         return jsonify({
             "error": "Something went wrong. Please try again later."
         }), 500
+
+
+# ---------------- CLEAR CHAT HISTORY ----------------
+
+@ai_bp.route("/clear", methods=["POST"])
+def clear_chat():
+    if "user_id" not in session:
+        return jsonify({"error": "Please log in first."}), 401
+
+    session.pop("ai_history", None)
+    session.modified = True
+    return jsonify({"message": "Chat history cleared."})

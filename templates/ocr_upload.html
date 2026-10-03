@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="ocr-page" style="max-width: 900px; margin: 24px auto; padding: 20px;">
+  <h1>Document OCR & Validation</h1>
+  <p>Upload documents to extract readable text and compare them with a service checklist.</p>
+
+  <form id="ocr-form" enctype="multipart/form-data">
+    <label for="service_name">Government service</label>
+    <select id="service_name" name="service_name" required style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="">Choose a service</option>
+      {% for service in services %}
+        <option value="{{ service.id or service.name }}" data-state="{{ service.state or '' }}">
+          {{ service.name }}{% if service.state %} — {{ service.state }}{% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <input type="hidden" id="state" name="state">
+
+    <label for="files">Upload documents (up to 5 files, 10 MB each)</label>
+    <input id="files" name="files" type="file" multiple required
+           accept=".png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff,.pdf"
+           style="display:block;margin:8px 0 16px;">
+
+    <button id="submit-btn" type="submit">Analyze documents</button>
+  </form>
+
+  <p id="ocr-status" role="status" aria-live="polite"></p>
+  <section id="ocr-results" aria-live="polite"></section>
+</div>
+
+<script>
+(() => {
+  const form = document.getElementById("ocr-form");
+  const serviceSelect = document.getElementById("service_name");
+  const stateInput = document.getElementById("state");
+  const filesInput = document.getElementById("files");
+  const status = document.getElementById("ocr-status");
+  const results = document.getElementById("ocr-results");
+  const submit = document.getElementById("submit-btn");
+
+  serviceSelect.addEventListener("change", () => {
+    const selected = serviceSelect.options[serviceSelect.selectedIndex];
+    stateInput.value = selected?.dataset?.state || "";
+  });
+
+  function addText(parent, tag, text, className) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    el.textContent = text == null ? "" : String(text);
+    parent.appendChild(el);
+    return el;
+  }
+
+  function renderReport(data) {
+    results.replaceChildren();
+    const validation = data.validation || {};
+    addText(results, "h2", "Validation report");
+    addText(results, "p",
+      `${data.service?.name || "Selected service"} — ${validation.overall_status || "Review required"}`);
+    addText(results, "p",
+      `Progress: ${validation.completed_documents || 0}/${validation.total_documents || 0} (${validation.completion_percentage || 0}%)`);
+
+    addText(results, "h3", "Uploaded documents");
+    (data.uploaded_documents || []).forEach(item => {
+      const card = document.createElement("article");
+      card.style.cssText = "border:1px solid #ccc;border-radius:10px;padding:14px;margin:10px 0;";
+      addText(card, "strong", item.filename || "Uploaded file");
+      addText(card, "p", `Type: ${item.document_type || "Unknown"}`);
+      addText(card, "p", `Status: ${item.status || "Needs Review"} · Confidence: ${item.confidence || "Low"}`);
+      if (item.matched_requirement) addText(card, "p", `Matched requirement: ${item.matched_requirement}`);
+      if (item.reason) addText(card, "p", item.reason);
+      if (Array.isArray(item.important_information) && item.important_information.length) {
+        addText(card, "p", "Visible information:");
+        const ul = document.createElement("ul");
+        item.important_information.forEach(info => addText(ul, "li", info));
+        card.appendChild(ul);
+      }
+      results.appendChild(card);
+    });
+
+    addText(results, "h3", "Missing documents");
+    const missing = validation.missing_documents || [];
+    if (missing.length) {
+      const ul = document.createElement("ul");
+      missing.forEach(item => addText(ul, "li", item));
+      results.appendChild(ul);
+    } else {
+      addText(results, "p", "No missing requirements were identified.");
+    }
+    addText(results, "p", data.notice || "");
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    results.replaceChildren();
+    status.textContent = "Processing documents… This may take a little while on first use.";
+    submit.disabled = true;
+
+    try {
+      const files = Array.from(filesInput.files || []);
+      if (!files.length) throw new Error("Please select at least one file.");
+      if (files.length > 5) throw new Error("Upload up to 5 files at a time.");
+      if (files.some(file => file.size > 10 * 1024 * 1024)) {
+        throw new Error("Each file must be 10 MB or smaller.");
+      }
+
+      const formData = new FormData(form);
+      const response = await fetch("/ocr/validate-documents", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin"
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Document analysis failed.");
+      }
+      renderReport(data);
+      status.textContent = "Analysis complete. Please review the results manually.";
+    } catch (error) {
+      status.textContent = error.message || "Something went wrong.";
+    } finally {
+      submit.disabled = false;
+    }
+  });
+})();
+</script>
+{% endblock %}
